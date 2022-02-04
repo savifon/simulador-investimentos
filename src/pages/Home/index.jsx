@@ -12,10 +12,12 @@ import {
   GroupInput,
 } from "./styles";
 import Card from "../../components/Card";
+import StackedBarChart from "../../components/StackedBarChart";
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
   const [indicadores, setIndicadores] = useState([]);
+  const [chart, setChart] = useState("");
 
   useEffect(() => {
     handleIndicadores();
@@ -32,8 +34,26 @@ const Home = () => {
     setLoading(true);
 
     const response = await getSimulacao(rendimento, indexacao);
-    const resultado = response.data;
-    console.log(response.data);
+    const resultado = response.data[0];
+
+    const dataComAporte = resultado.graficoValores.comAporte;
+    const dataSemAporte = resultado.graficoValores.semAporte;
+    const dataChart = formatDataGraph(dataComAporte, dataSemAporte);
+
+    setChart(
+      <StackedBarChart
+        data={dataChart}
+        keyX="tempo"
+        legendX="Tempo (meses)"
+        legendY="Valor (R$)"
+        dataKeyA="valorSemAporte"
+        legendA="Sem Aporte"
+        colorA="#000000"
+        dataKeyB="valorComAporte"
+        legendB="Com Aporte"
+        colorB="#ed8e53"
+      />
+    );
 
     setLoading(false);
   };
@@ -46,6 +66,20 @@ const Home = () => {
   };
 
   const inputValidation = (input) => {};
+
+  const formatDataGraph = (dataCA, dataSA) => {
+    let data = [];
+
+    for (var item in dataCA) {
+      data.push({
+        tempo: item,
+        valorComAporte: dataCA[item].toFixed(2),
+        valorSemAporte: dataSA[item].toFixed(2),
+      });
+    }
+
+    return data;
+  };
 
   return (
     <Box style={{ padding: "30px" }}>
@@ -162,9 +196,7 @@ const Home = () => {
         </div>
 
         <h3>Projeção de Valores</h3>
-        <div>
-          <h4>Gráfico</h4>
-        </div>
+        {chart}
       </FlexColumn>
     </Box>
   );

@@ -14,14 +14,4 @@ export default createGlobalStyle`
   body {
     background-color: #e3e3e3;
   }
-
-  button {
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 1rem;
-
-    &:hover {
-      opacity: .85;
-    }
-  }
 `;
