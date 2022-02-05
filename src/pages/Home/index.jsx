@@ -16,8 +16,18 @@ import StackedBarChart from "../../components/StackedBarChart";
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
-  const [indicadores, setIndicadores] = useState([]);
-  const [chart, setChart] = useState("");
+
+  const [ipca, setIpca] = useState(null);
+  const [cdi, setCdi] = useState(null);
+
+  const [valorFinalBruto, setValorFinalBruto] = useState(null);
+  const [aliquotaIR, setAliquotaIR] = useState(null);
+  const [valorPagoIR, setValorPagoIR] = useState(null);
+  const [valorTotalInvestido, setValorTotalInvesvido] = useState(null);
+  const [valorFinalLiquido, setValorFinalLiquido] = useState(null);
+  const [ganhoLiquido, setGanhoLiquido] = useState(null);
+
+  const [chart, setChart] = useState(null);
 
   useEffect(() => {
     handleIndicadores();
@@ -25,16 +35,24 @@ const Home = () => {
 
   const handleIndicadores = async () => {
     const response = await getIndicadores();
-    setIndicadores(response.data);
+    setCdi(response.data[0].valor);
+    setIpca(response.data[1].valor);
 
     setLoading(false);
   };
 
   const simulacao = async (rendimento, indexacao) => {
-    setLoading(true);
+    setChart(null);
 
     const response = await getSimulacao(rendimento, indexacao);
     const resultado = response.data[0];
+
+    setValorFinalBruto(resultado.valorFinalBruto);
+    setAliquotaIR(resultado.aliquotaIR);
+    setValorPagoIR(resultado.valorPagoIR);
+    setValorTotalInvesvido(resultado.valorTotalInvestido);
+    setValorFinalLiquido(resultado.valorFinalLiquido);
+    setGanhoLiquido(resultado.ganhoLiquido);
 
     const dataComAporte = resultado.graficoValores.comAporte;
     const dataSemAporte = resultado.graficoValores.semAporte;
@@ -43,19 +61,40 @@ const Home = () => {
     setChart(
       <StackedBarChart
         data={dataChart}
-        keyX="tempo"
         legendX="Tempo (meses)"
         legendY="Valor (R$)"
-        dataKeyA="valorSemAporte"
-        legendA="Sem Aporte"
-        colorA="#000000"
-        dataKeyB="valorComAporte"
-        legendB="Com Aporte"
-        colorB="#ed8e53"
       />
     );
+  };
 
-    setLoading(false);
+  const formatDataGraph = (dataCA, dataSA) => {
+    const labels = [];
+    const datasetA = [];
+    const datasetB = [];
+
+    for (var item in dataCA) {
+      labels.push(item);
+      datasetA.push(dataSA[item].toFixed(2));
+      datasetB.push(dataCA[item].toFixed(2));
+    }
+
+    const data = {
+      labels,
+      datasets: [
+        {
+          label: "Sem Aporte",
+          data: datasetA,
+          backgroundColor: "#000000",
+        },
+        {
+          label: "Com Aporte",
+          data: datasetB,
+          backgroundColor: "#ed8e53",
+        },
+      ],
+    };
+
+    return data;
   };
 
   const handleSubmit = (event) => {
@@ -66,20 +105,6 @@ const Home = () => {
   };
 
   const inputValidation = (input) => {};
-
-  const formatDataGraph = (dataCA, dataSA) => {
-    let data = [];
-
-    for (var item in dataCA) {
-      data.push({
-        tempo: item,
-        valorComAporte: dataCA[item].toFixed(2),
-        valorSemAporte: dataSA[item].toFixed(2),
-      });
-    }
-
-    return data;
-  };
 
   return (
     <Box style={{ padding: "30px" }}>
@@ -98,6 +123,7 @@ const Home = () => {
                     name="rendimento"
                     id="bruto"
                     value="bruto"
+                    required
                   />
                   <label htmlFor="bruto">Bruto</label>
                 </RadioInput>
@@ -108,16 +134,22 @@ const Home = () => {
                     name="rendimento"
                     id="liquido"
                     value="liquido"
+                    required
                   />
                   <label htmlFor="liquido">Líquido</label>
                 </RadioInput>
               </GroupInput>
 
               <label htmlFor="aporte_inicial">Aporte Inicial</label>
-              <Input type="text" name="aporte_inicial" id="aporte_inicial" />
+              <Input
+                type="text"
+                name="aporte_inicial"
+                id="aporte_inicial"
+                required
+              />
 
               <label htmlFor="prazo">Prazo (em meses)</label>
-              <Input type="text" name="prazo" id="prazo" />
+              <Input type="text" name="prazo" id="prazo" required />
 
               <label htmlFor="ipca">IPCA (ao ano)</label>
               <Input
@@ -125,7 +157,8 @@ const Home = () => {
                 type="text"
                 name="ipca"
                 id="ipca"
-                defaultValue="1111%"
+                defaultValue={ipca}
+                required
               />
             </FlexColumn>
 
@@ -134,11 +167,23 @@ const Home = () => {
 
               <GroupInput>
                 <RadioInput>
-                  <input type="radio" name="indexacao" id="pre" value="pre" />
+                  <input
+                    type="radio"
+                    name="indexacao"
+                    id="pre"
+                    value="pre"
+                    required
+                  />
                   <label htmlFor="pre">PRÉ</label>
                 </RadioInput>
                 <RadioInput>
-                  <input type="radio" name="indexacao" id="pos" value="pos" />
+                  <input
+                    type="radio"
+                    name="indexacao"
+                    id="pos"
+                    value="pos"
+                    required
+                  />
                   <label htmlFor="pos">PÓS</label>
                 </RadioInput>
                 <RadioInput>
@@ -147,16 +192,27 @@ const Home = () => {
                     name="indexacao"
                     id="fixado"
                     value="ipca"
+                    required
                   />
                   <label htmlFor="fixado">FIXADO</label>
                 </RadioInput>
               </GroupInput>
 
               <label htmlFor="aporte_mensal">Aporte Mensal</label>
-              <Input type="text" name="aporte_mensal" id="aporte_mensal" />
+              <Input
+                type="text"
+                name="aporte_mensal"
+                id="aporte_mensal"
+                required
+              />
 
               <label htmlFor="rentabilidade">Rentabilidade</label>
-              <Input type="text" name="rentabilidade" id="rentabilidade" />
+              <Input
+                type="text"
+                name="rentabilidade"
+                id="rentabilidade"
+                required
+              />
 
               <label htmlFor="cdi">CDI (ao ano)</label>
               <Input
@@ -164,7 +220,8 @@ const Home = () => {
                 type="text"
                 name="cdi"
                 id="cdi"
-                defaultValue="2222222%"
+                defaultValue={cdi}
+                required
               />
             </FlexColumn>
           </Box>
@@ -187,12 +244,22 @@ const Home = () => {
             justifyContent: "space-between",
           }}
         >
-          <Card title="Valor final Bruto" text="R$ 15.509,27" />
-          <Card title="Alíquota do IR" text="20%" />
-          <Card title="Valor Pago em IR" text="R$ 1.509,27" />
-          <Card title="Valor Final Líquido" text="R$ 56.509,27" />
-          <Card title="Valor Total Investido" text="R$ 9.509,27" />
-          <Card title="Ganho Líquido" text="R$ 47.000,00" />
+          <Card title="Valor final Bruto" text={valorFinalBruto} />
+          <Card title="Alíquota do IR" text={aliquotaIR} />
+          <Card title="Valor Pago em IR" text={valorPagoIR} />
+          <Card
+            title="Valor Final Líquido"
+            text={valorFinalLiquido}
+            textColor="green"
+            bold
+          />
+          <Card title="Valor Total Investido" text={valorTotalInvestido} />
+          <Card
+            title="Ganho Líquido"
+            text={ganhoLiquido}
+            textColor="green"
+            bold
+          />
         </div>
 
         <h3>Projeção de Valores</h3>

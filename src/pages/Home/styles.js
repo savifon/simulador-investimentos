@@ -56,25 +56,10 @@ export const RadioInput = styled.div`
 
   input {
     position: absolute;
-    visibility: hidden;
+    opacity: 0;
     top: 50%;
     transform: translateY(-50%);
     left: 5px;
-
-    &:checked:before {
-      position: absolute;
-      content: " ";
-      left: 4px;
-      top: 0;
-      width: 3px;
-      height: 8px;
-      border: solid white;
-      border-width: 0 2px 2px 0;
-      -webkit-transform: rotate(45deg);
-      -ms-transform: rotate(45deg);
-      transform: rotate(45deg);
-      visibility: visible;
-    }
 
     &:hover + label {
       background: #ed8e53c9;
@@ -83,6 +68,18 @@ export const RadioInput = styled.div`
     &:checked + label {
       color: #ffffff;
       background: #ed8e53;
+
+      &:before {
+        position: absolute;
+        content: " ";
+        left: 2px;
+        top: 50%;
+        width: 3px;
+        height: 8px;
+        border: solid #ffffff;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg) translateY(-100%);
+      }
     }
   }
 `;

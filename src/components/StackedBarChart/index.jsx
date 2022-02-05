@@ -1,54 +1,49 @@
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  ResponsiveContainer,
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
   Tooltip,
   Legend,
-} from "recharts";
+} from "chart.js";
+import { Bar } from "react-chartjs-2";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const StackedBarChart = (props) => {
-  const {
-    data,
-    keyX,
-    legendX,
-    legendY,
-    dataKeyA,
-    legendA,
-    colorA,
-    dataKeyB,
-    legendB,
-    colorB,
-  } = props;
+  const { legendX, legendY, data } = props;
+
+  const options = {
+    responsive: true,
+    scales: {
+      x: {
+        stacked: true,
+        title: {
+          text: legendX,
+          display: true,
+        },
+      },
+      y: {
+        stacked: true,
+        title: {
+          text: legendY,
+          display: true,
+        },
+      },
+    },
+  };
 
   return (
-    <div style={{ width: "100%", height: 300 }}>
-      <ResponsiveContainer>
-        <BarChart
-          data={data}
-          margin={{ top: 0, bottom: 20, left: 60, right: 30 }}
-        >
-          <XAxis
-            dataKey={keyX}
-            label={{ value: legendX, position: "bottom" }}
-            scale="band"
-            axisLine={false}
-            tickLine={false}
-            padding={{ left: 5 }}
-          />
-          <YAxis
-            label={{ value: legendY, angle: -90, position: "left" }}
-            axisLine={false}
-            tickLine={false}
-            padding={{ bottom: 5 }}
-          />
-          <Tooltip />
-          <Legend wrapperStyle={{ top: 300, left: 100 }} />
-          <Bar dataKey={dataKeyA} name={legendA} stackId="a" fill={colorA} />
-          <Bar dataKey={dataKeyB} name={legendB} stackId="a" fill={colorB} />
-        </BarChart>
-      </ResponsiveContainer>
+    <div style={{ maxWidth: "99%" }}>
+      <Bar options={options} data={data} />
     </div>
   );
 };

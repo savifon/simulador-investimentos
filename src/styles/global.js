@@ -8,7 +8,6 @@ export default createGlobalStyle`
     box-sizing: border-box;
     font-family: "Roboto", sans-serif;
     color: #2e2e2e;
-    transition: all ease .3s;
   }
 
   body {
