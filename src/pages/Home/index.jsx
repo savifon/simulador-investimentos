@@ -12,7 +12,7 @@ import {
   GroupInput,
 } from "./styles";
 import Card from "../../components/Card";
-import StackedBarChart from "../../components/StackedBarChart";
+import StackedBarChart from "../../components/Chart/";
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
@@ -42,8 +42,6 @@ const Home = () => {
   };
 
   const simulacao = async (rendimento, indexacao) => {
-    setChart(null);
-
     const response = await getSimulacao(rendimento, indexacao);
     const resultado = response.data[0];
 
@@ -61,38 +59,29 @@ const Home = () => {
     setChart(
       <StackedBarChart
         data={dataChart}
+        keyX="tempo"
         legendX="Tempo (meses)"
         legendY="Valor (R$)"
+        dataKeyA="valorSemAporte"
+        legendA="Sem Aporte"
+        colorA="#000000"
+        dataKeyB="valorComAporte"
+        legendB="Com Aporte"
+        colorB="#ed8e53"
       />
     );
   };
 
   const formatDataGraph = (dataCA, dataSA) => {
-    const labels = [];
-    const datasetA = [];
-    const datasetB = [];
+    let data = [];
 
     for (var item in dataCA) {
-      labels.push(item);
-      datasetA.push(dataSA[item].toFixed(2));
-      datasetB.push(dataCA[item].toFixed(2));
+      data.push({
+        tempo: item,
+        valorComAporte: dataCA[item].toFixed(2),
+        valorSemAporte: dataSA[item].toFixed(2),
+      });
     }
-
-    const data = {
-      labels,
-      datasets: [
-        {
-          label: "Sem Aporte",
-          data: datasetA,
-          backgroundColor: "#000000",
-        },
-        {
-          label: "Com Aporte",
-          data: datasetB,
-          backgroundColor: "#ed8e53",
-        },
-      ],
-    };
 
     return data;
   };
