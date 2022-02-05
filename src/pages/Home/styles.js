@@ -61,8 +61,13 @@ export const RadioInput = styled.div`
     transform: translateY(-50%);
     left: 5px;
 
+    & + label {
+      background: #e9e9e9;
+    }
+
     &:hover + label {
       background: #ed8e53c9;
+      transition: all ease 0.2s;
     }
 
     &:checked + label {
@@ -70,8 +75,8 @@ export const RadioInput = styled.div`
       background: #ed8e53;
 
       &:before {
-        position: absolute;
         content: " ";
+        position: absolute;
         left: 2px;
         top: 50%;
         width: 3px;
@@ -103,10 +108,11 @@ export const Button = styled.button`
   padding: 20px;
   border-radius: 10px;
   border: 1px solid #2e2e2e;
-  background: #efefef;
+  background: #e9e9e9;
   cursor: pointer;
   font-weight: bold;
   font-size: 1.2rem;
+  transition: all ease 0.2s;
 
   &[type="submit"] {
     border: none;
@@ -115,5 +121,10 @@ export const Button = styled.button`
 
   &:hover {
     opacity: 0.85;
+  }
+
+  &:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
   }
 `;

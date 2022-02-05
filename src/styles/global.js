@@ -13,4 +13,8 @@ export default createGlobalStyle`
   body {
     background-color: #e3e3e3;
   }
+
+  .inputErr {
+    color: red;
+  }
 `;

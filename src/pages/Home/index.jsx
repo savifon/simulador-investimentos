@@ -20,6 +20,15 @@ const Home = () => {
   const [ipca, setIpca] = useState(null);
   const [cdi, setCdi] = useState(null);
 
+  const [aporteInicial, setAporteInicial] = useState("");
+  const [aporteInicialErr, setAporteInicialErr] = useState({});
+  const [aporteMensal, setAporteMensal] = useState("");
+  const [aporteMensalErr, setAporteMensalErr] = useState({});
+  const [prazo, setPrazo] = useState("");
+  const [prazoErr, setPrazoErr] = useState({});
+  const [rentabilidade, setRentabilidade] = useState("");
+  const [rentabilidadeErr, setRentabilidadeErr] = useState({});
+
   const [valorFinalBruto, setValorFinalBruto] = useState(null);
   const [aliquotaIR, setAliquotaIR] = useState(null);
   const [valorPagoIR, setValorPagoIR] = useState(null);
@@ -93,7 +102,15 @@ const Home = () => {
     simulacao(data.get("rendimento"), data.get("indexacao"));
   };
 
-  const inputValidation = (input) => {};
+  const inputValidation = (value, setState) => {
+    if (!/^[0-9,.]*$/g.test(value)) {
+      setState({ msg: "Deve ser um número", class: "inputErr" });
+      return true;
+    } else {
+      setState({ msg: "", class: "inputValid" });
+      return false;
+    }
+  };
 
   return (
     <Box style={{ padding: "30px" }}>
@@ -129,16 +146,42 @@ const Home = () => {
                 </RadioInput>
               </GroupInput>
 
-              <label htmlFor="aporte_inicial">Aporte Inicial</label>
+              <label
+                className={aporteInicialErr.class}
+                htmlFor="aporte_inicial"
+              >
+                Aporte Inicial
+              </label>
               <Input
                 type="text"
                 name="aporte_inicial"
                 id="aporte_inicial"
+                value={aporteInicial}
+                onChange={(e) => {
+                  inputValidation(e.target.value, setAporteInicialErr);
+                  setAporteInicial(e.target.value);
+                }}
                 required
               />
+              <span className={aporteInicialErr.class}>
+                {aporteInicialErr.msg}
+              </span>
 
-              <label htmlFor="prazo">Prazo (em meses)</label>
-              <Input type="text" name="prazo" id="prazo" required />
+              <label className={prazoErr.class} htmlFor="prazo">
+                Prazo (em meses)
+              </label>
+              <Input
+                type="text"
+                name="prazo"
+                id="prazo"
+                value={prazo}
+                onChange={(e) => {
+                  inputValidation(e.target.value, setPrazoErr);
+                  setPrazo(e.target.value);
+                }}
+                required
+              />
+              <span className={prazoErr.class}>{prazoErr.msg}</span>
 
               <label htmlFor="ipca">IPCA (ao ano)</label>
               <Input
@@ -187,21 +230,41 @@ const Home = () => {
                 </RadioInput>
               </GroupInput>
 
-              <label htmlFor="aporte_mensal">Aporte Mensal</label>
+              <label className={aporteMensalErr.class} htmlFor="aporte_mensal">
+                Aporte Mensal
+              </label>
               <Input
                 type="text"
                 name="aporte_mensal"
                 id="aporte_mensal"
+                value={aporteMensal}
+                onChange={(e) => {
+                  inputValidation(e.target.value, setAporteMensalErr);
+                  setAporteMensal(e.target.value);
+                }}
                 required
               />
+              <span className={aporteMensalErr.class}>
+                {aporteMensalErr.msg}
+              </span>
 
-              <label htmlFor="rentabilidade">Rentabilidade</label>
+              <label className={rentabilidadeErr.class} htmlFor="rentabilidade">
+                Rentabilidade
+              </label>
               <Input
                 type="text"
                 name="rentabilidade"
                 id="rentabilidade"
+                value={rentabilidade}
+                onChange={(e) => {
+                  inputValidation(e.target.value, setRentabilidadeErr);
+                  setRentabilidade(e.target.value);
+                }}
                 required
               />
+              <span className={rentabilidadeErr.class}>
+                {rentabilidadeErr.msg}
+              </span>
 
               <label htmlFor="cdi">CDI (ao ano)</label>
               <Input
@@ -217,7 +280,9 @@ const Home = () => {
 
           <Box>
             <Button type="reset">Limpar campos</Button>
-            <Button type="submit">Simular</Button>
+            <Button disabled type="submit">
+              Simular
+            </Button>
           </Box>
         </form>
       </FlexColumn>
