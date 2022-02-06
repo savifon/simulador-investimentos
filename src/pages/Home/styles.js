@@ -4,6 +4,60 @@ export const Box = styled.div`
   display: flex;
   gap: 60px;
 
+  & div {
+    position: relative;
+  }
+
+  & label {
+    display: block;
+  }
+
+  & input {
+    border: none;
+    background: none;
+
+    &:not([type="radio"], [type="checkbox"]) {
+      border-bottom: 1px solid #2e2e2e;
+      padding: 10px 5px;
+      width: 20vw;
+      min-width: 200px;
+      max-width: 100%;
+      font-size: 1rem;
+
+      & + span.placeholder {
+        position: absolute;
+        width: 25px;
+        height: 40px;
+        padding: 10px 0;
+        left: 0;
+        content: "R$";
+      }
+      &.percent + span.placeholder {
+        left: unset;
+        right: 0;
+      }
+
+      &.money {
+        padding-left: 25px;
+      }
+    }
+  }
+
+  & .error {
+    & > *:not(input) {
+      color: red;
+    }
+
+    &:where(span) {
+      display: block;
+      margin-top: 5px;
+    }
+
+    & > *:where(input) {
+      border-bottom-color: red !important;
+    }
+  }
+
   @media (max-width: 1024px) {
     flex-wrap: wrap;
   }
@@ -12,29 +66,18 @@ export const Box = styled.div`
 export const FlexColumn = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 40px;
+
+  & p {
+    margin-bottom: 10px;
+  }
 `;
 
 export const Title = styled.h2`
   text-align: left;
-  margin-bottom: 20px;
 
   @media (max-width: 767px) {
     text-align: center;
-  }
-`;
-
-export const Input = styled.input`
-  border: none;
-  background: none;
-
-  &:not([type="radio"], [type="checkbox"]) {
-    border-bottom: 1px solid #2e2e2e;
-    padding: 10px 5px;
-    width: 20vw;
-    min-width: 200px;
-    max-width: 100%;
-    font-size: 1rem;
   }
 `;
 

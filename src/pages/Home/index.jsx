@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
 
 import { getIndicadores, getSimulacao } from "../../services/api";
 
@@ -6,7 +8,6 @@ import {
   Box,
   Title,
   FlexColumn,
-  Input,
   Button,
   RadioInput,
   GroupInput,
@@ -14,20 +15,44 @@ import {
 import Card from "../../components/Card";
 import StackedBarChart from "../../components/Chart/";
 
+const regexFloat = /^([0-9]{1,3}.([0-9]{3}.)*[0-9]{3}|[0-9]+)(,[0-9][0-9])?$/g;
+const regexInteger = /^[0-9]*$/;
+
+const simulacaoSchema = Yup.object().shape({
+  rendimento: Yup.string().required("Rendimento é obrigatório"),
+  aporte_inicial: Yup.string()
+    .required("Aporte Inicial é obrigatório")
+    .matches(regexFloat, "Aporte Inicial deve ser um número"),
+  prazo: Yup.string()
+    .required("Prazo é obrigatório")
+    .matches(regexInteger, "Informe um prazo válido"),
+  ipca: Yup.string().required("IPCA é obrigatório"),
+  indexacao: Yup.string().required("Indexação é obrigatório"),
+  aporte_mensal: Yup.string()
+    .required("Aporte Mensal é obrigatório")
+    .matches(regexFloat, "Aporte Mensal deve ser um número"),
+  rentabilidade: Yup.string()
+    .required("Rentabilidade é obrigatório")
+    .matches(regexFloat, "Rentabilidade deve ser um número"),
+  cdi: Yup.string().required("CDI é obrigatório"),
+});
+
 const Home = () => {
   const [loading, setLoading] = useState(true);
 
-  const [ipca, setIpca] = useState(null);
-  const [cdi, setCdi] = useState(null);
+  const [ipca, setIpca] = useState("");
+  const [cdi, setCdi] = useState("");
 
-  const [aporteInicial, setAporteInicial] = useState("");
-  const [aporteInicialErr, setAporteInicialErr] = useState({});
-  const [aporteMensal, setAporteMensal] = useState("");
-  const [aporteMensalErr, setAporteMensalErr] = useState({});
-  const [prazo, setPrazo] = useState("");
-  const [prazoErr, setPrazoErr] = useState({});
-  const [rentabilidade, setRentabilidade] = useState("");
-  const [rentabilidadeErr, setRentabilidadeErr] = useState({});
+  const initialValues = {
+    rendimento: "",
+    aporte_inicial: "",
+    prazo: "",
+    ipca: ipca,
+    indexacao: "",
+    aporte_mensal: "",
+    rentabilidade: "",
+    cdi: cdi,
+  };
 
   const [valorFinalBruto, setValorFinalBruto] = useState(null);
   const [aliquotaIR, setAliquotaIR] = useState(null);
@@ -95,21 +120,10 @@ const Home = () => {
     return data;
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
+  const handleSubmit = () => {
+    const data = new FormData();
 
     simulacao(data.get("rendimento"), data.get("indexacao"));
-  };
-
-  const inputValidation = (value, setState) => {
-    if (!/^[0-9,.]*$/g.test(value)) {
-      setState({ msg: "Deve ser um número", class: "inputErr" });
-      return true;
-    } else {
-      setState({ msg: "", class: "inputValid" });
-      return false;
-    }
   };
 
   return (
@@ -117,207 +131,258 @@ const Home = () => {
       <FlexColumn>
         <Title>Simulador</Title>
 
-        <form id="formSimulacao" name="formSimulacao" onSubmit={handleSubmit}>
-          <Box>
-            <FlexColumn>
-              <p>Rendimento [i]</p>
+        <Formik
+          enableReinitialize={true}
+          initialValues={initialValues}
+          validationSchema={simulacaoSchema}
+          onSubmit={handleSubmit}
+        >
+          {(formik) => {
+            const { errors, touched, isValid, dirty } = formik;
+            return (
+              <Form id="formSimulacao">
+                <Box>
+                  <FlexColumn>
+                    <div>
+                      <p>Rendimento [i]</p>
+                      <GroupInput>
+                        <RadioInput>
+                          <Field
+                            type="radio"
+                            name="rendimento"
+                            id="bruto"
+                            value="bruto"
+                          />
+                          <label htmlFor="bruto">Bruto</label>
+                        </RadioInput>
+                        <RadioInput>
+                          <Field
+                            type="radio"
+                            name="rendimento"
+                            id="liquido"
+                            value="liquido"
+                          />
+                          <label htmlFor="liquido">Líquido</label>
+                        </RadioInput>
+                      </GroupInput>
+                      <ErrorMessage
+                        name="email"
+                        component="span"
+                        className="error"
+                      />
+                    </div>
 
-              <GroupInput>
-                <RadioInput>
-                  <input
-                    type="radio"
-                    name="rendimento"
-                    id="bruto"
-                    value="bruto"
-                    required
-                  />
-                  <label htmlFor="bruto">Bruto</label>
-                </RadioInput>
+                    <div
+                      className={
+                        errors.aporte_inicial && touched.aporte_inicial
+                          ? "error"
+                          : null
+                      }
+                    >
+                      <label htmlFor="aporte_inicial">Aporte Inicial</label>
+                      <Field
+                        type="text"
+                        name="aporte_inicial"
+                        id="aporte_inicial"
+                        className="money"
+                      />
+                      <span className="placeholder">R$</span>
+                      <ErrorMessage
+                        name="aporte_inicial"
+                        component="span"
+                        className="error"
+                      />
+                    </div>
 
-                <RadioInput>
-                  <input
-                    type="radio"
-                    name="rendimento"
-                    id="liquido"
-                    value="liquido"
-                    required
-                  />
-                  <label htmlFor="liquido">Líquido</label>
-                </RadioInput>
-              </GroupInput>
+                    <div
+                      className={errors.prazo && touched.prazo ? "error" : null}
+                    >
+                      <label htmlFor="prazo">Prazo</label>
+                      <Field type="text" name="prazo" id="prazo" />
+                      <ErrorMessage
+                        name="prazo"
+                        component="span"
+                        className="error"
+                      />
+                    </div>
 
-              <label
-                className={aporteInicialErr.class}
-                htmlFor="aporte_inicial"
-              >
-                Aporte Inicial
-              </label>
-              <Input
-                type="text"
-                name="aporte_inicial"
-                id="aporte_inicial"
-                value={aporteInicial}
-                onChange={(e) => {
-                  inputValidation(e.target.value, setAporteInicialErr);
-                  setAporteInicial(e.target.value);
-                }}
-                required
-              />
-              <span className={aporteInicialErr.class}>
-                {aporteInicialErr.msg}
-              </span>
+                    <div
+                      className={errors.ipca && touched.ipca ? "error" : null}
+                    >
+                      <label htmlFor="prazo">IPCA (ao ano)</label>
+                      <Field
+                        type="text"
+                        name="ipca"
+                        id="ipca"
+                        className="percent"
+                        readOnly
+                      />
+                      <span className="placeholder">%</span>
+                      <ErrorMessage
+                        name="ipca"
+                        component="span"
+                        className="error"
+                      />
+                    </div>
+                  </FlexColumn>
 
-              <label className={prazoErr.class} htmlFor="prazo">
-                Prazo (em meses)
-              </label>
-              <Input
-                type="text"
-                name="prazo"
-                id="prazo"
-                value={prazo}
-                onChange={(e) => {
-                  inputValidation(e.target.value, setPrazoErr);
-                  setPrazo(e.target.value);
-                }}
-                required
-              />
-              <span className={prazoErr.class}>{prazoErr.msg}</span>
+                  <FlexColumn>
+                    <div>
+                      <p>Tipos de indexação [i]</p>
+                      <GroupInput>
+                        <RadioInput>
+                          <Field
+                            type="radio"
+                            name="indexacao"
+                            id="pre"
+                            value="pre"
+                          />
+                          <label htmlFor="pre">PRÉ</label>
+                        </RadioInput>
+                        <RadioInput>
+                          <Field
+                            type="radio"
+                            name="indexacao"
+                            id="pos"
+                            value="pos"
+                          />
+                          <label htmlFor="pos">PÓS</label>
+                        </RadioInput>
+                        <RadioInput>
+                          <Field
+                            type="radio"
+                            name="indexacao"
+                            id="fixado"
+                            value="ipca"
+                          />
+                          <label htmlFor="fixado">FIXADO</label>
+                        </RadioInput>
+                      </GroupInput>
+                      <ErrorMessage
+                        name="indexacao"
+                        component="span"
+                        className="error"
+                      />
+                    </div>
 
-              <label htmlFor="ipca">IPCA (ao ano)</label>
-              <Input
-                readOnly
-                type="text"
-                name="ipca"
-                id="ipca"
-                defaultValue={ipca}
-                required
-              />
-            </FlexColumn>
+                    <div
+                      className={
+                        errors.aporte_mensal && touched.aporte_mensal
+                          ? "error"
+                          : null
+                      }
+                    >
+                      <label htmlFor="aporte_mensal">Aporte Mensal</label>
+                      <Field
+                        type="text"
+                        name="aporte_mensal"
+                        id="aporte_mensal"
+                        className="money"
+                      />
+                      <span className="placeholder">R$</span>
+                      <ErrorMessage
+                        name="aporte_mensal"
+                        component="span"
+                        className="error"
+                      />
+                    </div>
 
-            <FlexColumn>
-              <p>Tipos de indexação [i]</p>
+                    <div
+                      className={
+                        errors.rentabilidade && touched.rentabilidade
+                          ? "error"
+                          : null
+                      }
+                    >
+                      <label htmlFor="rentabilidade">Rentabilidade</label>
+                      <Field
+                        type="text"
+                        name="rentabilidade"
+                        id="rentabilidade"
+                        className="percent"
+                      />
+                      <span className="placeholder">%</span>
+                      <ErrorMessage
+                        name="rentabilidade"
+                        component="span"
+                        className="error"
+                      />
+                    </div>
 
-              <GroupInput>
-                <RadioInput>
-                  <input
-                    type="radio"
-                    name="indexacao"
-                    id="pre"
-                    value="pre"
-                    required
-                  />
-                  <label htmlFor="pre">PRÉ</label>
-                </RadioInput>
-                <RadioInput>
-                  <input
-                    type="radio"
-                    name="indexacao"
-                    id="pos"
-                    value="pos"
-                    required
-                  />
-                  <label htmlFor="pos">PÓS</label>
-                </RadioInput>
-                <RadioInput>
-                  <input
-                    type="radio"
-                    name="indexacao"
-                    id="fixado"
-                    value="ipca"
-                    required
-                  />
-                  <label htmlFor="fixado">FIXADO</label>
-                </RadioInput>
-              </GroupInput>
+                    <div className={errors.cdi && touched.cdi ? "error" : null}>
+                      <label htmlFor="cdi">CDI (ao ano)</label>
+                      <Field
+                        type="text"
+                        name="cdi"
+                        id="cdi"
+                        className="percent"
+                        readOnly
+                      />
+                      <span className="placeholder">%</span>
+                      <ErrorMessage
+                        name="cdi"
+                        component="span"
+                        className="error"
+                      />
+                    </div>
+                  </FlexColumn>
+                </Box>
 
-              <label className={aporteMensalErr.class} htmlFor="aporte_mensal">
-                Aporte Mensal
-              </label>
-              <Input
-                type="text"
-                name="aporte_mensal"
-                id="aporte_mensal"
-                value={aporteMensal}
-                onChange={(e) => {
-                  inputValidation(e.target.value, setAporteMensalErr);
-                  setAporteMensal(e.target.value);
-                }}
-                required
-              />
-              <span className={aporteMensalErr.class}>
-                {aporteMensalErr.msg}
-              </span>
-
-              <label className={rentabilidadeErr.class} htmlFor="rentabilidade">
-                Rentabilidade
-              </label>
-              <Input
-                type="text"
-                name="rentabilidade"
-                id="rentabilidade"
-                value={rentabilidade}
-                onChange={(e) => {
-                  inputValidation(e.target.value, setRentabilidadeErr);
-                  setRentabilidade(e.target.value);
-                }}
-                required
-              />
-              <span className={rentabilidadeErr.class}>
-                {rentabilidadeErr.msg}
-              </span>
-
-              <label htmlFor="cdi">CDI (ao ano)</label>
-              <Input
-                readOnly
-                type="text"
-                name="cdi"
-                id="cdi"
-                defaultValue={cdi}
-                required
-              />
-            </FlexColumn>
-          </Box>
-
-          <Box>
-            <Button type="reset">Limpar campos</Button>
-            <Button disabled type="submit">
-              Simular
-            </Button>
-          </Box>
-        </form>
+                <Box style={{ marginTop: "40px" }}>
+                  <Button type="reset" onClick={() => setChart(null)}>
+                    Limpar campos
+                  </Button>
+                  <Button
+                    type="submit"
+                    className={!(dirty && isValid) ? "disabled-btn" : ""}
+                    disabled={!(dirty && isValid)}
+                  >
+                    Simular
+                  </Button>
+                </Box>
+              </Form>
+            );
+          }}
+        </Formik>
       </FlexColumn>
 
       <FlexColumn>
-        <h2>Resultado da Simulação</h2>
+        {!chart ? (
+          <div>Aguardando...</div>
+        ) : (
+          <>
+            <h2>Resultado da Simulação</h2>
 
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "20px",
-            justifyContent: "space-between",
-          }}
-        >
-          <Card title="Valor final Bruto" text={valorFinalBruto} />
-          <Card title="Alíquota do IR" text={aliquotaIR} />
-          <Card title="Valor Pago em IR" text={valorPagoIR} />
-          <Card
-            title="Valor Final Líquido"
-            text={valorFinalLiquido}
-            textColor="green"
-            bold
-          />
-          <Card title="Valor Total Investido" text={valorTotalInvestido} />
-          <Card
-            title="Ganho Líquido"
-            text={ganhoLiquido}
-            textColor="green"
-            bold
-          />
-        </div>
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "20px",
+                justifyContent: "space-between",
+              }}
+            >
+              <Card title="Valor final Bruto" text={valorFinalBruto} />
+              <Card title="Alíquota do IR" text={aliquotaIR} />
+              <Card title="Valor Pago em IR" text={valorPagoIR} />
+              <Card
+                title="Valor Final Líquido"
+                text={valorFinalLiquido}
+                textColor="green"
+                bold
+              />
+              <Card title="Valor Total Investido" text={valorTotalInvestido} />
+              <Card
+                title="Ganho Líquido"
+                text={ganhoLiquido}
+                textColor="green"
+                bold
+              />
+            </div>
 
-        <h3>Projeção de Valores</h3>
-        {chart}
+            <h3>Projeção de Valores</h3>
+            {chart}
+          </>
+        )}
       </FlexColumn>
     </Box>
   );

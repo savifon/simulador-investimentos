@@ -23,7 +23,7 @@ const StackedBarChart = (props) => {
   } = props;
 
   return (
-    <div style={{ width: "99%" }}>
+    <div style={{ width: "99%", height: 300 }}>
       <ResponsiveContainer>
         <BarChart
           data={data}
