@@ -1,3 +1,5 @@
+import React from "react";
+
 import {
   BarChart,
   Bar,
@@ -23,11 +25,11 @@ const StackedBarChart = (props) => {
   } = props;
 
   return (
-    <div style={{ width: "99%", height: 300 }}>
+    <div style={{ width: "99%", height: 250 }}>
       <ResponsiveContainer>
         <BarChart
           data={data}
-          margin={{ top: 0, bottom: 20, left: 60, right: 30 }}
+          margin={{ top: 0, bottom: 20, left: 20, right: 20 }}
         >
           <XAxis
             dataKey={keyX}
@@ -44,7 +46,7 @@ const StackedBarChart = (props) => {
             padding={{ bottom: 5 }}
           />
           <Tooltip />
-          <Legend wrapperStyle={{ top: 300, left: 100 }} />
+          <Legend wrapperStyle={{ top: 250, left: 60 }} />
           <Bar dataKey={dataKeyA} name={legendA} stackId="a" fill={colorA} />
           <Bar dataKey={dataKeyB} name={legendB} stackId="a" fill={colorB} />
         </BarChart>

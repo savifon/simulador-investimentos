@@ -12,7 +12,7 @@ import {
   GroupInput,
 } from "./styles";
 import Card from "../../components/Card";
-import StackedBarChart from "../../components/Chart/";
+import StackedBarChart from "../../components/Chart";
 
 const regexFloat = /^([0-9]{1,3}.([0-9]{3}.)*[0-9]{3}|[0-9]+)(,[0-9][0-9])?$/g;
 const regexInteger = /^[0-9]*$/;
@@ -36,9 +36,12 @@ const simulacaoSchema = Yup.object().shape({
   cdi: Yup.string().required("CDI é obrigatório"),
 });
 
-const Home = () => {
+const Simulacao = () => {
   const [ipca, setIpca] = useState("");
   const [cdi, setCdi] = useState("");
+
+  const [simulacao, setSimulacao] = useState({});
+  const [chart, setChart] = useState(null);
 
   const initialValues = {
     rendimento: "",
@@ -50,10 +53,6 @@ const Home = () => {
     rentabilidade: "",
     cdi: cdi,
   };
-
-  const [simulacao, setSimulacao] = useState({});
-
-  const [chart, setChart] = useState(null);
 
   useEffect(() => {
     handleIndicadores();
@@ -69,14 +68,11 @@ const Home = () => {
   const handleSimulacao = async (rendimento, indexacao) => {
     await getSimulacao(rendimento, indexacao).then((response) => {
       const resultado = response.data[0];
-
       setSimulacao(resultado);
-      console.log(simulacao);
-      console.log(resultado);
 
       const dataChart = formatDataGraph(
-        simulacao.graficoValores.comAporte,
-        simulacao.graficoValores.semAporte
+        resultado.graficoValores.comAporte,
+        resultado.graficoValores.semAporte
       );
 
       setChart(
@@ -376,4 +372,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Simulacao;
