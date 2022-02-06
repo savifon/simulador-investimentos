@@ -4,6 +4,16 @@ export const Box = styled.div`
   display: flex;
   gap: 50px;
 
+  &.container {
+    padding: 30px 60px;
+  }
+
+  & form {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+
   & div {
     position: relative;
   }
@@ -46,6 +56,10 @@ export const Box = styled.div`
         cursor: default;
       }
     }
+
+    @media (max-width: 1200px) {
+      width: 100% !important;
+    }
   }
 
   & .error {
@@ -63,8 +77,19 @@ export const Box = styled.div`
     }
   }
 
-  @media (max-width: 1024px) {
+  @media (max-width: 768px) {
     flex-wrap: wrap;
+    gap: 60px;
+
+    &.container {
+      padding: 30px;
+      gap: 60px;
+    }
+
+    &.groupButtons {
+      flex-direction: column-reverse;
+      gap: 20px;
+    }
   }
 `;
 
@@ -75,6 +100,14 @@ export const FlexColumn = styled.div`
 
   & p {
     margin-bottom: 10px;
+  }
+
+  @media (max-width: 1024px) {
+    width: 100%;
+  }
+
+  @media (max-width: 768px) {
+    gap: 30px;
   }
 `;
 
@@ -159,7 +192,7 @@ export const GroupInput = styled.div`
 
 export const Button = styled.button`
   width: 100%;
-  padding: 20px;
+  padding: 15px 20px;
   border-radius: 10px;
   border: 1px solid #151b1e;
   background: #e9e9e9;

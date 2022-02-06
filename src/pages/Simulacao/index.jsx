@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
-import { getIndicadores, getSimulacao } from "../../services/api";
 import {
   Box,
   Title,
@@ -14,8 +13,8 @@ import {
 import Card from "../../components/Card";
 import StackedBarChart from "../../components/Chart";
 
-const regexFloat = /^([0-9]{1,3}.([0-9]{3}.)*[0-9]{3}|[0-9]+)(,[0-9][0-9])?$/g;
-const regexInteger = /^[0-9]*$/;
+import { regexInteger, regexFloat, brl } from "../../utils/js/functions";
+import { getIndicadores, getSimulacao } from "../../services/api";
 
 const simulacaoSchema = Yup.object().shape({
   rendimento: Yup.string().required("Rendimento é obrigatório"),
@@ -39,20 +38,9 @@ const simulacaoSchema = Yup.object().shape({
 const Simulacao = () => {
   const [ipca, setIpca] = useState("");
   const [cdi, setCdi] = useState("");
-
   const [simulacao, setSimulacao] = useState({});
+  const simulacaoRef = useRef(null);
   const [chart, setChart] = useState(null);
-
-  const initialValues = {
-    rendimento: "",
-    aporte_inicial: "",
-    prazo: "",
-    ipca: ipca,
-    indexacao: "",
-    aporte_mensal: "",
-    rentabilidade: "",
-    cdi: cdi,
-  };
 
   useEffect(() => {
     handleIndicadores();
@@ -89,6 +77,8 @@ const Simulacao = () => {
           colorB="#ed8e53"
         />
       );
+
+      simulacaoRef.current.scrollIntoView({ behavior: "smooth" });
     });
   };
 
@@ -110,8 +100,19 @@ const Simulacao = () => {
     handleSimulacao(data.rendimento, data.indexacao);
   };
 
+  const initialValues = {
+    rendimento: "",
+    aporte_inicial: "",
+    prazo: "",
+    ipca: ipca,
+    indexacao: "",
+    aporte_mensal: "",
+    rentabilidade: "",
+    cdi: cdi,
+  };
+
   return (
-    <Box style={{ padding: "30px 60px" }}>
+    <Box className="container">
       <FlexColumn>
         <Title>Simulador</Title>
 
@@ -312,7 +313,7 @@ const Simulacao = () => {
                   </FlexColumn>
                 </Box>
 
-                <Box style={{ marginTop: "40px" }}>
+                <Box className="groupButtons">
                   <Button type="reset" onClick={() => setChart(null)}>
                     Limpar campos
                   </Button>
@@ -330,7 +331,7 @@ const Simulacao = () => {
         </Formik>
       </FlexColumn>
 
-      <FlexColumn>
+      <FlexColumn ref={simulacaoRef}>
         {chart ? (
           <>
             <h2>Resultado da Simulação</h2>
@@ -345,20 +346,27 @@ const Simulacao = () => {
             >
               <Card
                 title="Valor final Bruto"
-                text={simulacao.valorFinalBruto}
+                text={brl(simulacao.valorFinalBruto)}
               />
-              <Card title="Alíquota do IR" text={simulacao.aliquotaIR} />
-              <Card title="Valor Pago em IR" text={simulacao.valorPagoIR} />
+              <Card title="Alíquota do IR" text={`${simulacao.aliquotaIR} %`} />
+              <Card
+                title="Valor Pago em IR"
+                text={brl(simulacao.valorPagoIR)}
+              />
               <Card
                 title="Valor Final Líquido"
-                text={simulacao.valorFinalLiquido}
+                text={brl(simulacao.valorFinalLiquido)}
                 bold
               />
               <Card
                 title="Valor Total Investido"
-                text={simulacao.valorTotalInvestido}
+                text={brl(simulacao.valorTotalInvestido)}
               />
-              <Card title="Ganho Líquido" text={simulacao.ganhoLiquido} bold />
+              <Card
+                title="Ganho Líquido"
+                text={brl(simulacao.ganhoLiquido)}
+                bold
+              />
             </div>
 
             <h3>Projeção de Valores</h3>

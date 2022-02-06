@@ -46,7 +46,7 @@ const StackedBarChart = (props) => {
             padding={{ bottom: 5 }}
           />
           <Tooltip />
-          <Legend wrapperStyle={{ top: 250, left: 60 }} />
+          <Legend wrapperStyle={{ top: 230, left: 55 }} />
           <Bar dataKey={dataKeyA} name={legendA} stackId="a" fill={colorA} />
           <Bar dataKey={dataKeyB} name={legendB} stackId="a" fill={colorB} />
         </BarChart>

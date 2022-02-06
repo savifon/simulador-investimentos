@@ -16,4 +16,8 @@ export const CardItem = styled.div`
     font-weight: bold;
     color: #3ea02e;
   }
+
+  @media (max-width: 1200px) {
+    width: 100%;
+  }
 `;
