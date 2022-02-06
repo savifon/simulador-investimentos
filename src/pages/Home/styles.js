@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const Box = styled.div`
   display: flex;
-  gap: 60px;
+  gap: 50px;
 
   & div {
     position: relative;
@@ -17,9 +17,9 @@ export const Box = styled.div`
     background: none;
 
     &:not([type="radio"], [type="checkbox"]) {
-      border-bottom: 1px solid #2e2e2e;
+      border-bottom: 1px solid #151b1e;
       padding: 10px 5px;
-      width: 20vw;
+      width: 19vw;
       min-width: 200px;
       max-width: 100%;
       font-size: 1rem;
@@ -32,6 +32,7 @@ export const Box = styled.div`
         left: 0;
         content: "R$";
       }
+
       &.percent + span.placeholder {
         left: unset;
         right: 0;
@@ -39,6 +40,10 @@ export const Box = styled.div`
 
       &.money {
         padding-left: 25px;
+      }
+
+      &[readOnly] {
+        cursor: default;
       }
     }
   }
@@ -85,7 +90,7 @@ export const RadioInput = styled.div`
   position: relative;
   display: flex;
   max-width: fit-content;
-  border: 1px solid #2e2e2e;
+  border: 1px solid #151b1e;
   overflow: hidden;
 
   &:hover {
@@ -116,11 +121,12 @@ export const RadioInput = styled.div`
     &:checked + label {
       color: #ffffff;
       background: #ed8e53;
+      padding-left: 30px;
 
       &:before {
         content: " ";
         position: absolute;
-        left: 2px;
+        left: 13px;
         top: 50%;
         width: 3px;
         height: 8px;
@@ -135,7 +141,12 @@ export const RadioInput = styled.div`
 export const GroupInput = styled.div`
   display: flex;
 
+  & > * {
+    border-left-width: 0;
+  }
+
   & > *:first-child {
+    border-left-width: 1px;
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
   }
@@ -150,7 +161,7 @@ export const Button = styled.button`
   width: 100%;
   padding: 20px;
   border-radius: 10px;
-  border: 1px solid #2e2e2e;
+  border: 1px solid #151b1e;
   background: #e9e9e9;
   cursor: pointer;
   font-weight: bold;
@@ -167,7 +178,7 @@ export const Button = styled.button`
   }
 
   &:disabled {
-    background: #cccccc;
+    background: #969696;
     cursor: not-allowed;
   }
 `;

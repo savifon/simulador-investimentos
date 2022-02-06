@@ -5,7 +5,8 @@ const Card = (props) => {
     <div
       style={{
         background: "#f4f4f4",
-        boxShadow: "0 0 5px #CCCCCC",
+        boxShadow: "0 0 10px #CCCCCC",
+        border: "1px solid #CCCCCC",
         padding: "15px",
         textAlign: "center",
         borderRadius: "3px",

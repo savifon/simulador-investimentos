@@ -127,7 +127,7 @@ const Home = () => {
   };
 
   return (
-    <Box style={{ padding: "30px" }}>
+    <Box style={{ padding: "30px 60px" }}>
       <FlexColumn>
         <Title>Simulador</Title>
 
@@ -347,9 +347,7 @@ const Home = () => {
       </FlexColumn>
 
       <FlexColumn>
-        {!chart ? (
-          <div>Aguardando...</div>
-        ) : (
+        {chart ? (
           <>
             <h2>Resultado da Simulação</h2>
 
@@ -382,6 +380,8 @@ const Home = () => {
             <h3>Projeção de Valores</h3>
             {chart}
           </>
+        ) : (
+          <div></div>
         )}
       </FlexColumn>
     </Box>
