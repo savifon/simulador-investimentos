@@ -3,7 +3,6 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
 import { getIndicadores, getSimulacao } from "../../services/api";
-
 import {
   Box,
   Title,
@@ -38,8 +37,6 @@ const simulacaoSchema = Yup.object().shape({
 });
 
 const Home = () => {
-  const [loading, setLoading] = useState(true);
-
   const [ipca, setIpca] = useState("");
   const [cdi, setCdi] = useState("");
 
@@ -54,56 +51,49 @@ const Home = () => {
     cdi: cdi,
   };
 
-  const [valorFinalBruto, setValorFinalBruto] = useState(null);
-  const [aliquotaIR, setAliquotaIR] = useState(null);
-  const [valorPagoIR, setValorPagoIR] = useState(null);
-  const [valorTotalInvestido, setValorTotalInvesvido] = useState(null);
-  const [valorFinalLiquido, setValorFinalLiquido] = useState(null);
-  const [ganhoLiquido, setGanhoLiquido] = useState(null);
+  const [simulacao, setSimulacao] = useState({});
 
   const [chart, setChart] = useState(null);
 
   useEffect(() => {
     handleIndicadores();
-  }, [loading]);
+  }, []);
 
   const handleIndicadores = async () => {
-    const response = await getIndicadores();
-    setCdi(response.data[0].valor);
-    setIpca(response.data[1].valor);
-
-    setLoading(false);
+    await getIndicadores().then((response) => {
+      setCdi(response.data[0].valor);
+      setIpca(response.data[1].valor);
+    });
   };
 
-  const simulacao = async (rendimento, indexacao) => {
-    const response = await getSimulacao(rendimento, indexacao);
-    const resultado = response.data[0];
+  const handleSimulacao = async (rendimento, indexacao) => {
+    await getSimulacao(rendimento, indexacao).then((response) => {
+      const resultado = response.data[0];
 
-    setValorFinalBruto(resultado.valorFinalBruto);
-    setAliquotaIR(resultado.aliquotaIR);
-    setValorPagoIR(resultado.valorPagoIR);
-    setValorTotalInvesvido(resultado.valorTotalInvestido);
-    setValorFinalLiquido(resultado.valorFinalLiquido);
-    setGanhoLiquido(resultado.ganhoLiquido);
+      setSimulacao(resultado);
+      console.log(simulacao);
+      console.log(resultado);
 
-    const dataComAporte = resultado.graficoValores.comAporte;
-    const dataSemAporte = resultado.graficoValores.semAporte;
-    const dataChart = formatDataGraph(dataComAporte, dataSemAporte);
+      const dataChart = formatDataGraph(
+        simulacao.graficoValores.comAporte,
+        simulacao.graficoValores.semAporte
+      );
 
-    setChart(
-      <StackedBarChart
-        data={dataChart}
-        keyX="tempo"
-        legendX="Tempo (meses)"
-        legendY="Valor (R$)"
-        dataKeyA="valorSemAporte"
-        legendA="Sem Aporte"
-        colorA="#000000"
-        dataKeyB="valorComAporte"
-        legendB="Com Aporte"
-        colorB="#ed8e53"
-      />
-    );
+      setChart(
+        <StackedBarChart
+          data={dataChart}
+          keyX="tempo"
+          legendX="Tempo (meses)"
+          legendY="Valor (R$)"
+          dataKeyA="valorSemAporte"
+          legendA="Sem Aporte"
+          colorA="#151b1e"
+          dataKeyB="valorComAporte"
+          legendB="Com Aporte"
+          colorB="#ed8e53"
+        />
+      );
+    });
   };
 
   const formatDataGraph = (dataCA, dataSA) => {
@@ -120,10 +110,8 @@ const Home = () => {
     return data;
   };
 
-  const handleSubmit = () => {
-    const data = new FormData();
-
-    simulacao(data.get("rendimento"), data.get("indexacao"));
+  const handleSubmit = (data) => {
+    handleSimulacao(data.rendimento, data.indexacao);
   };
 
   return (
@@ -135,7 +123,7 @@ const Home = () => {
           enableReinitialize={true}
           initialValues={initialValues}
           validationSchema={simulacaoSchema}
-          onSubmit={handleSubmit}
+          onSubmit={(values) => handleSubmit(values)}
         >
           {(formik) => {
             const { errors, touched, isValid, dirty } = formik;
@@ -359,22 +347,22 @@ const Home = () => {
                 justifyContent: "space-between",
               }}
             >
-              <Card title="Valor final Bruto" text={valorFinalBruto} />
-              <Card title="Alíquota do IR" text={aliquotaIR} />
-              <Card title="Valor Pago em IR" text={valorPagoIR} />
+              <Card
+                title="Valor final Bruto"
+                text={simulacao.valorFinalBruto}
+              />
+              <Card title="Alíquota do IR" text={simulacao.aliquotaIR} />
+              <Card title="Valor Pago em IR" text={simulacao.valorPagoIR} />
               <Card
                 title="Valor Final Líquido"
-                text={valorFinalLiquido}
-                textColor="green"
+                text={simulacao.valorFinalLiquido}
                 bold
               />
-              <Card title="Valor Total Investido" text={valorTotalInvestido} />
               <Card
-                title="Ganho Líquido"
-                text={ganhoLiquido}
-                textColor="green"
-                bold
+                title="Valor Total Investido"
+                text={simulacao.valorTotalInvestido}
               />
+              <Card title="Ganho Líquido" text={simulacao.ganhoLiquido} bold />
             </div>
 
             <h3>Projeção de Valores</h3>

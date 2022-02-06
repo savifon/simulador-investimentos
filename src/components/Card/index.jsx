@@ -1,31 +1,14 @@
+import React from "react";
+import { CardItem } from "./styles";
+
 const Card = (props) => {
-  const { title, text, textColor, bold } = props;
+  const { title, text, bold } = props;
 
   return (
-    <div
-      style={{
-        background: "#f4f4f4",
-        boxShadow: "0 0 10px #CCCCCC",
-        border: "1px solid #CCCCCC",
-        padding: "15px",
-        textAlign: "center",
-        borderRadius: "3px",
-        width: "30%",
-        display: "flex",
-        flexDirection: "column",
-        gap: "20px",
-      }}
-    >
+    <CardItem>
       <h3>{title}</h3>
-      <p
-        style={{
-          color: textColor,
-          fontWeight: bold ? "bold" : "",
-        }}
-      >
-        {text}
-      </p>
-    </div>
+      <p className={bold ? "green" : ""}>{text}</p>
+    </CardItem>
   );
 };
 
