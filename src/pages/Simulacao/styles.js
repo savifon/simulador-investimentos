@@ -130,11 +130,6 @@ export const RadioInput = styled.div`
     opacity: 0.85;
   }
 
-  label {
-    padding: 15px 20px;
-    cursor: pointer;
-  }
-
   input {
     position: absolute;
     opacity: 0;
@@ -144,6 +139,8 @@ export const RadioInput = styled.div`
 
     & + label {
       background: #e9e9e9;
+      padding: 15px 20px;
+      cursor: pointer;
     }
 
     &:hover + label {
@@ -166,6 +163,22 @@ export const RadioInput = styled.div`
         border: solid #ffffff;
         border-width: 0 2px 2px 0;
         transform: rotate(45deg) translateY(-100%);
+      }
+    }
+
+    @media (max-width: 1200px) {
+      & + label {
+        padding: 12px 10px;
+      }
+
+      &:checked + label {
+        padding-left: 15px;
+
+        &:before {
+          width: 2px;
+          height: 6px;
+          left: 0px;
+        }
       }
     }
   }
