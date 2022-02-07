@@ -36,7 +36,7 @@ const simulacaoSchema = Yup.object().shape({
   cdi: Yup.string().required("CDI é obrigatório"),
 });
 
-const Simulacao = () => {
+const Simulador = () => {
   const [ipca, setIpca] = useState("");
   const [cdi, setCdi] = useState("");
   const [simulacao, setSimulacao] = useState({});
@@ -388,4 +388,4 @@ const Simulacao = () => {
   );
 };
 
-export default Simulacao;
+export default Simulador;
