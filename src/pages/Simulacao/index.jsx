@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import { MdInfoOutline } from "react-icons/md";
 
 import {
   Box,
@@ -114,7 +115,7 @@ const Simulacao = () => {
   return (
     <Box className="container">
       <FlexColumn>
-        <Title>Simulador</Title>
+        <Title data-tip="React-tooltip">Simulador</Title>
 
         <Formik
           enableReinitialize={true}
@@ -129,7 +130,11 @@ const Simulacao = () => {
                 <Box>
                   <FlexColumn>
                     <div>
-                      <p>Rendimento [i]</p>
+                      <p className="labelInfo">
+                        Rendimento
+                        <MdInfoOutline size="1.2em" />
+                        <span>Escolha uma das opções de rendimento.</span>
+                      </p>
                       <GroupInput>
                         <RadioInput>
                           <Field
@@ -213,7 +218,10 @@ const Simulacao = () => {
 
                   <FlexColumn>
                     <div>
-                      <p>Tipos de indexação [i]</p>
+                      <p className="labelInfo">
+                        Tipos de indexação <MdInfoOutline size="1.2em" />
+                        <span>Escolha uma das opções de indexação.</span>
+                      </p>
                       <GroupInput>
                         <RadioInput>
                           <Field
@@ -348,7 +356,7 @@ const Simulacao = () => {
                 title="Valor final Bruto"
                 text={brl(simulacao.valorFinalBruto)}
               />
-              <Card title="Alíquota do IR" text={`${simulacao.aliquotaIR} %`} />
+              <Card title="Alíquota do IR" text={`${simulacao.aliquotaIR}%`} />
               <Card
                 title="Valor Pago em IR"
                 text={brl(simulacao.valorPagoIR)}

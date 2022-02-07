@@ -29,7 +29,7 @@ const StackedBarChart = (props) => {
       <ResponsiveContainer>
         <BarChart
           data={data}
-          margin={{ top: 0, bottom: 20, left: 20, right: 20 }}
+          margin={{ top: 0, bottom: 25, left: 20, right: 20 }}
         >
           <XAxis
             dataKey={keyX}

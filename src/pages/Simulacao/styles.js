@@ -100,6 +100,29 @@ export const FlexColumn = styled.div`
 
   & p {
     margin-bottom: 10px;
+
+    &.labelInfo {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      & > span {
+        display: none;
+      }
+
+      & svg:hover ~ span {
+        display: block;
+        position: absolute;
+        right: 25px;
+        top: 0;
+        background: #151b1e;
+        color: #ffffff;
+        padding: 10px;
+        border-radius: 3px;
+        z-index: 999;
+        width: 250px;
+      }
+    }
   }
 
   @media (max-width: 1024px) {
