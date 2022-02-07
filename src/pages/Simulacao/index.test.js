@@ -16,4 +16,13 @@ describe("Página Simulador", () => {
     const welcomeText = screen.getByText("Simulador");
     expect(welcomeText).toBeInTheDocument();
   });
+
+  test("Deve conter o input para o Aporte Mensal", () => {
+    renderSimulador();
+
+    const inputAporteMensal = screen.getByRole("radio", {
+      name: "aporte_mensal",
+    });
+    expect(inputAporteMensal).toBeInTheDocument();
+  });
 });
