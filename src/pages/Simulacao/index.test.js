@@ -1,19 +1,19 @@
 import React from "react";
-import { render, unmountComponentAtNode } from "react-dom";
-import { act } from "react-dom/test-utils";
+
+import { render, screen } from "@testing-library/react";
+import "@testing-library/jest-dom";
 
 import Simulador from "./index";
 
-let container = null;
-beforeEach(() => {
-  // configurar o elemento do DOM como o alvo da renderização
-  container = document.createElement("div");
-  document.body.appendChild(container);
-});
+function renderSimulador() {
+  return render(<Simulador />);
+}
 
-it("Renderizando o título do formulário", () => {
-  act(() => {
-    render(<Simulador />, container);
+describe("Página Simulador", () => {
+  test("Deve conter o título de introdução do formulário", () => {
+    renderSimulador();
+
+    const welcomeText = screen.getByText("Simulador");
+    expect(welcomeText).toBeInTheDocument();
   });
-  expect(container.textContent).toBe("Simulador");
 });
