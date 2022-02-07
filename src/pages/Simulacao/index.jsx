@@ -24,7 +24,7 @@ const simulacaoSchema = Yup.object().shape({
     .matches(regexFloat, "Aporte Inicial deve ser um número"),
   prazo: Yup.string()
     .required("Prazo é obrigatório")
-    .matches(regexInteger, "Informe um prazo válido"),
+    .matches(regexInteger, "Informe um prazo válido (em meses)"),
   ipca: Yup.string().required("IPCA é obrigatório"),
   indexacao: Yup.string().required("Indexação é obrigatório"),
   aporte_mensal: Yup.string()
