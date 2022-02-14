@@ -1,6 +1,7 @@
 import React from "react";
 
 import { Field, ErrorMessage } from "formik";
+import { BoxField } from "./styles";
 
 const FieldInput = ({
   type,
@@ -13,7 +14,7 @@ const FieldInput = ({
   touched,
 }) => {
   return (
-    <div className={error && touched && "error"}>
+    <BoxField className={error && touched && "error"}>
       <label htmlFor={name}>{label}</label>
       <Field
         type={type ? type : "text"}
@@ -24,7 +25,7 @@ const FieldInput = ({
       />
       {placeholder && <span className="placeholder">{placeholder}</span>}
       <ErrorMessage name={name} component="span" className="error" />
-    </div>
+    </BoxField>
   );
 };
 

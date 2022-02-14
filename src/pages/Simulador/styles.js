@@ -62,21 +62,6 @@ export const Box = styled.div`
     }
   }
 
-  & .error {
-    & > *:not(input) {
-      color: red;
-    }
-
-    &:where(span) {
-      display: block;
-      margin-top: 5px;
-    }
-
-    & > *:where(input) {
-      border-bottom-color: red !important;
-    }
-  }
-
   @media (max-width: 768px) {
     flex-wrap: wrap;
     gap: 60px;
