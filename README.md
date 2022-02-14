@@ -19,6 +19,5 @@ Para baixar, executar e acessar o projeto, siga os passos:
 1. `git clone` neste projeto (ou download manual do repositório)
 2. `cd <PastaDoProjeto>`
 3. `npm install` ou `yarn install`
-4. `json-server db.json`
+4. `json-server db.json -p 3001`
 5. `npm start` ou `yarn start`
-
